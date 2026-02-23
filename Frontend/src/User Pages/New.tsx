@@ -187,7 +187,13 @@ const New = () => {
                     className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group flex flex-col"
                   >
                     {/* Product Image */}
-               
+                    <div className="relative overflow-hidden bg-gray-100">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
 
                     {/* Product Info */}
                     <div className="p-3 flex flex-col">
