@@ -203,9 +203,7 @@ const New = () => {
                       </h3>
 
                       {/* Price */}
-                      <div className="mb-2">
-                        <span className="text-xl font-bold text-gray-800">Rs. {product.price}</span>
-                      </div>
+                   
 
                       {/* Add to Cart Button */}
                       <button
