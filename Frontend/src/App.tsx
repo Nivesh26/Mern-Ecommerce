@@ -21,6 +21,7 @@ const App = () => {
         {/* Logins User*/}
         <Route path="/login" element={<Userlogin />} />
         <Route path="/signup" element={<UserSignup />} /> 
+        <Route path="/adminlogin" element={<Adminlogin />} />
 
 
       </Routes>
