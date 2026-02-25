@@ -7,6 +7,8 @@ import Contact from './User Pages/Contact'
 import Userlogin from './Logins/Userlogin'
 import WhatsAppChat from './User Components/WhatsAppChat'
 import UserSignup from './Logins/UserSignup'
+import AdminSignup from './Logins/AdminSignup'
+import Adminlogin from './Logins/Adminlogin'
 
 const App = () => {
   return (
