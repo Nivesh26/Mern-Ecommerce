@@ -49,13 +49,7 @@ const New = () => {
       image: prdoductImage3,
       category: 'Herbal Supplements'
     },
-    {
-      id: 6,
-      name: 'Cow\'s Ghee',
-      price: 350,
-      image: productImage4,
-      category: 'Skin & Hair Care'
-    }
+
   ]
 
   const categories = ['All', 'Digestive Care', 'Immunity Boosters', 'Herbal Supplements', 'Skin & Hair Care', 'Oils & Massage', 'Ayurvedic Medicines']
