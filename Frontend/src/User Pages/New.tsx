@@ -224,7 +224,7 @@ const New = () => {
         </div>
       </main>
 
-      <Footer />
+    
     </div>
   )
 }
