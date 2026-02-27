@@ -128,26 +128,7 @@ const New = () => {
                     </div>
                   </div>
 
-                  {/* Min Price Slider */}
-                  <div className="mb-6">
-                    <label className="block text-xs text-gray-600 mb-2">Minimum Price</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max={maxPriceLimit}
-                      value={minPrice}
-                      onChange={(e) => {
-                        const newMin = Number(e.target.value)
-                        if (newMin <= maxPrice) {
-                          setMinPrice(newMin)
-                        }
-                      }}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                      style={{
-                        background: `linear-gradient(to right, #2563eb 0%, #2563eb ${(minPrice / maxPriceLimit) * 100}%, #e5e7eb ${(minPrice / maxPriceLimit) * 100}%, #e5e7eb 100%)`
-                      }}
-                    />
-                  </div>
+                  
 
                   {/* Max Price Slider */}
                   <div>
