@@ -82,10 +82,7 @@ const New = () => {
       
       <main className="flex-1 bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-gray-800">New</h1>
-          </div>
-
+   
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Filter Sidebar */}
             <aside className="w-full lg:w-64 shrink-0">
