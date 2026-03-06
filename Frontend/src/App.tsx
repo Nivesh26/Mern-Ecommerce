@@ -24,10 +24,6 @@ const App = () => {
         <Route path="/login" element={<Userlogin />} />
         <Route path="/signup" element={<UserSignup />} /> 
 
-        {/* Logins Admin*/}
-        <Route path="/adminlogin" element={<Adminlogin />} />
-        <Route path="/adminsignup" element={<AdminSignup />} />
-
 
       </Routes>
       <WhatsAppChat />
