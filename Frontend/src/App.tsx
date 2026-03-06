@@ -20,11 +20,7 @@ const App = () => {
         <Route path="/aboutus" element={<Aboutus />} />
         <Route path="/contact" element={<Contact />} />
 
-        {/* Logins User*/}
-        <Route path="/login" element={<Userlogin />} />
-        <Route path="/signup" element={<UserSignup />} /> 
-
-
+    
       </Routes>
       <WhatsAppChat />
     </BrowserRouter>
