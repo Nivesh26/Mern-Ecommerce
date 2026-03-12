@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import productImage from '../assets/176775850311hn1.webp'
 import prdoductImage2 from '../assets/SpecialChyawanprash.webp'
 import prdoductImage3 from '../assets/SoanPapdi.webp'
@@ -55,20 +56,22 @@ const NewProduct = () => {
               className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
             >
               {/* Product Image */}
-              <div className="relative overflow-hidden bg-gray-100">
+              <Link to="/product" state={{ product }} className="block relative overflow-hidden bg-gray-100">
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
                 />
-              </div>
+              </Link>
 
               {/* Product Info */}
               <div className="p-4">
                 <p className="text-sm text-gray-500 mb-1">{product.category}</p>
-                <h3 className="text-lg font-semibold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors line-clamp-1">
-                  {product.name}
-                </h3>
+                <Link to="/product" state={{ product }}>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    {product.name}
+                  </h3>
+                </Link>
 
                 {/* Price */}
                 <div className="flex items-center space-x-2">

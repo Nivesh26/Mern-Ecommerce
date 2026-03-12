@@ -9,17 +9,20 @@ import WhatsAppChat from './User Components/WhatsAppChat'
 import UserSignup from './Logins/UserSignup'
 import AdminSignup from './Logins/AdminSignup'
 import Adminlogin from './Logins/Adminlogin'
+import Productdetail from './User Pages/Productdetail'
+import Adminhomepage from './Admin/Adminhomepage'
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
+        {/* User Pages*/}
         <Route path="/" element={<Homepage />} />
         <Route path="/shop" element={<Shop />} />
         <Route path="/new" element={<New />} />
         <Route path="/aboutus" element={<Aboutus />} />
         <Route path="/contact" element={<Contact />} />
-
+        <Route path="/product" element={<Productdetail />} />
         {/* Logins User*/}
         <Route path="/login" element={<Userlogin />} />
         <Route path="/signup" element={<UserSignup />} /> 
@@ -27,6 +30,9 @@ const App = () => {
         {/* Logins Admin*/}
         <Route path="/adminlogin" element={<Adminlogin />} />
         <Route path="/adminsignup" element={<AdminSignup />} />
+        
+        {/* Admin Pages*/}
+        <Route path="/adminhomepage" element={<Adminhomepage />} />
 
 
       </Routes>
