@@ -16,7 +16,9 @@ import Product from './Admin/Product'
 import Orders from './Admin/Orders'
 import Customer from './Admin/Customer'
 import Message from './Admin/Message'
+import Settings from './Admin/Settings'
 import Cart from './User Pages/Cart'
+import Profile from './User Pages/Profile'
 
 const AppContent = () => {
   return (
@@ -30,6 +32,7 @@ const AppContent = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/product" element={<Productdetail />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/profile" element={<Profile />} />
 
         {/* Logins User*/}
         <Route path="/login" element={<Userlogin />} />
@@ -45,6 +48,7 @@ const AppContent = () => {
         <Route path="/adminorders" element={<Orders />} />
         <Route path="/admincustomer" element={<Customer />} />
         <Route path="/adminmessage" element={<Message />} />
+        <Route path="/adminsettings" element={<Settings />} />
       </Routes>
    
     </>
