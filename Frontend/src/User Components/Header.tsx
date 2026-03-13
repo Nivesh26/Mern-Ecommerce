@@ -10,11 +10,11 @@ const Header = () => {
       <span className="text-xl font-bold text-gray-800">Sangam Ayurvedic</span>
     </Link> </div>
     <ul className="hidden md:flex space-x-8 text-gray-700 font-medium">
-      <li><Link to="/" className="hover:text-blue-600">Home</Link></li>
-      <li><Link to="/new" className="hover:text-blue-600">New</Link></li>
-      <li><Link to="/shop" className="hover:text-blue-600">Shop</Link></li>
-      <li><Link to="/aboutus" className="hover:text-blue-600">About Us</Link></li>
-      <li><Link to="/contact" className="hover:text-blue-600">Contact</Link></li>
+      <li><Link to="/" className="hover:text-red-600">Home</Link></li>
+      <li><Link to="/new" className="hover:text-red-600">New</Link></li>
+      <li><Link to="/shop" className="hover:text-red-600">Shop</Link></li>
+      <li><Link to="/aboutus" className="hover:text-red-600">About Us</Link></li>
+      <li><Link to="/contact" className="hover:text-red-600">Contact</Link></li>
     </ul>
 
     <div className="hidden md:flex items-center space-x-3">
@@ -26,7 +26,7 @@ const Header = () => {
         />
         <button
           type="button"
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors"
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors"
           aria-label="Search"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
