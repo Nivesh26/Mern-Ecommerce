@@ -32,7 +32,7 @@ const Userlogin = () => {
                Login
             </h1>
             <p className="text-gray-500 text-sm text-center mb-6">
-              Sign in to your Sangam Ayurvedic account
+              Sign in to your Nivesh account
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-5">

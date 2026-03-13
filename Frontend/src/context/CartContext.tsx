@@ -17,7 +17,7 @@ export type CartItem = {
   quantity: number
 }
 
-const CART_STORAGE_KEY = 'sangam-cart'
+const CART_STORAGE_KEY = 'nivesh-cart'
 
 function getImageUrl(image: string | { default?: string }): string {
   if (typeof image === 'string') return image

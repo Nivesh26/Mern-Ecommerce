@@ -7,7 +7,7 @@ const Header = () => {
   <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
       <div className="flex items-center space-x-2"> <Link to="/" className="flex items-center space-x-2">
       <img src={profile} alt="Local Hunt" className="h-12 cursor-pointer" />
-      <span className="text-xl font-bold text-gray-800">Sangam Ayurvedic</span>
+      <span className="text-xl font-bold text-gray-800">Nivesh</span>
     </Link> </div>
     <ul className="hidden md:flex space-x-8 text-gray-700 font-medium">
       <li><Link to="/" className="hover:text-red-600">Home</Link></li>

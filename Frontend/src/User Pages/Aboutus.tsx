@@ -47,7 +47,7 @@ const Aboutus = () => {
         <section className="py-8">
           <div className="max-w-7xl mx-auto px-6 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-              Sangam Ayurvedic 
+              Nivesh 
             </h1>
           </div>
         </section>
@@ -67,7 +67,7 @@ const Aboutus = () => {
               {/* Text Content */}
               <div className="order-1 md:order-2 space-y-6 text-gray-700 leading-relaxed">
                 <p className="text-lg">
-                  Sangam Ayurvedic Shop was born from a deep reverence for the ancient wisdom of Ayurveda and a commitment to bringing authentic, traditional healing to the people of Nepal. Nestled in the historic Patan Durbar Square, our shop stands as a bridge between the rich cultural heritage of the Newar community and the timeless principles of Ayurvedic medicine.
+                  Nivesh Shop was born from a deep reverence for the ancient wisdom of Ayurveda and a commitment to bringing authentic, traditional healing to the people of Nepal. Nestled in the historic Patan Durbar Square, our shop stands as a bridge between the rich cultural heritage of the Newar community and the timeless principles of Ayurvedic medicine.
                 </p>
                 <p className="text-lg">
                   Our journey began with a vision to preserve and share the authentic Ayurvedic knowledge that has been passed down through generations. We believe that true wellness comes from understanding the harmony between nature, body, and mind—principles deeply embedded in both Ayurvedic philosophy and Nepalese cultural traditions. Every product we offer is carefully selected to ensure it meets the highest standards of authenticity and efficacy, honoring the legacy of this ancient healing science.

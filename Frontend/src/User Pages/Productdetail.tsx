@@ -18,7 +18,7 @@ const DEFAULT_PRODUCT = {
 const SAMPLE_REVIEWS = [
   { name: 'Sita Sharma', rating: 5, date: 'Mar 5, 2025', comment: 'Very effective and natural. My whole family uses it. Teeth feel clean and fresh.' },
   { name: 'Ram Kumar', rating: 4, date: 'Feb 28, 2025', comment: 'Good quality Ayurvedic toothpaste. Would recommend for daily use.' },
-  { name: 'Anita Gurung', rating: 5, date: 'Feb 15, 2025', comment: 'Authentic product. Fast delivery from Sangam Ayurvedic. Will buy again.' }
+  { name: 'Anita Gurung', rating: 5, date: 'Feb 15, 2025', comment: 'Authentic product. Fast delivery from Nivesh. Will buy again.' }
 ]
 
 const StarRating = ({ rating, size = 'md' }: { rating: number; size?: 'sm' | 'md' }) => {
@@ -43,7 +43,7 @@ const Productdetail = () => {
   const location = useLocation()
   const productFromShop = location.state?.product as { id?: number; name: string; price: number; image: string; category: string; description?: string } | undefined
   const product = productFromShop ?? DEFAULT_PRODUCT
-  const description = product.description ?? 'Authentic Ayurvedic product from Sangam Ayurvedic.'
+  const description = product.description ?? 'Authentic Ayurvedic product from Nivesh.'
 
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' })
   const { addItem } = useCart()

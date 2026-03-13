@@ -51,7 +51,7 @@ const UserSignup = () => {
                   Create your account
                 </h1>
                 <p className="text-gray-500 text-sm">
-                  Join Sangam Ayurvedic for authentic products and a healthier life.
+                  Join Nivesh for authentic products and a healthier life.
                 </p>
               </div>
 

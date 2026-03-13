@@ -9,8 +9,8 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
-              <img src={profile} alt="Sangam Ayurvedic" className="h-12 cursor-pointer" />
-              <span className="text-xl font-bold">Sangam Ayurvedic</span>
+              <img src={profile} alt="Nivesh" className="h-12 cursor-pointer" />
+              <span className="text-xl font-bold">Nivesh</span>
             </Link>
             <p className="text-gray-400 text-sm">
               Your trusted source for authentic Ayurvedic products. Natural healing for a healthier life.
@@ -72,7 +72,7 @@ const Footer = () => {
                   <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                 </svg>
                 <span className="text-sm">
-                  info@sangamayurvedic.com
+                  info@nivesh.com
                 </span>
               </li>
             </ul>
@@ -104,7 +104,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="mt-8 pt-8 text-center border-t-0">
           <p className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} Sangam Ayurvedic Shop. Nivesh Shrestha. All rights reserved.
+            © {new Date().getFullYear()} Nivesh Shop. Nivesh Shrestha. All rights reserved.
           </p>
         </div>
       </div>

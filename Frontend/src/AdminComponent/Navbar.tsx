@@ -16,7 +16,7 @@ const Navbar = () => {
       {/* Brand */}
       <div className="p-5 border-b border-gray-700">
         <Link to="/adminhomepage" className="text-xl font-bold text-white hover:text-green-400 transition-colors">
-          Sangam Admin
+          Nivesh Admin
         </Link>
       </div>
 
