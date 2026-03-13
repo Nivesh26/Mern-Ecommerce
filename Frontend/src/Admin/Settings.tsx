@@ -3,6 +3,14 @@ import Navbar from '../AdminComponent/Navbar'
 
 const Settings = () => {
   const [storeClosed, setStoreClosed] = useState(false)
+  const [showChangePassword, setShowChangePassword] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState(false)
   const [notifications, setNotifications] = useState({
     newOrders: true,
     lowStock: true,
@@ -13,6 +21,32 @@ const Settings = () => {
   const toggleNotification = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }))
   }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setPasswordForm((prev) => ({ ...prev, [name]: value }))
+    setPasswordError('')
+  }
+
+  const handleChangePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError('New passwords do not match')
+      return
+    }
+    if (passwordForm.newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters')
+      return
+    }
+    setPasswordError('')
+    setPasswordSuccess(true)
+    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    setShowChangePassword(false)
+    setTimeout(() => setPasswordSuccess(false), 3000)
+  }
+
+  const inputBase =
+    'w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors'
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -85,12 +119,94 @@ const Settings = () => {
             </div>
             <div className="p-6">
               <p className="text-sm text-gray-600 mb-4">Change your admin login password to keep your account secure.</p>
-              <button
-                type="button"
-                className="px-5 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-              >
-                Change password
-              </button>
+              {passwordSuccess && (
+                <div className="flex items-center gap-2 mb-4 p-3 rounded-lg bg-green-50 text-green-800 text-sm">
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  Password updated successfully.
+                </div>
+              )}
+              {!showChangePassword ? (
+                <button
+                  type="button"
+                  onClick={() => setShowChangePassword(true)}
+                  className="px-5 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Change password
+                </button>
+              ) : (
+                <div className="flex justify-center">
+                  <form onSubmit={handleChangePasswordSubmit} className="space-y-4 w-full max-w-md">
+                  <div>
+                    <label htmlFor="adminCurrentPassword" className="block text-sm font-medium text-gray-700 mb-1.5">Current password</label>
+                    <input
+                      type="password"
+                      id="adminCurrentPassword"
+                      name="currentPassword"
+                      value={passwordForm.currentPassword}
+                      onChange={handlePasswordChange}
+                      className={inputBase}
+                      placeholder="Enter current password"
+                      autoComplete="current-password"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="adminNewPassword" className="block text-sm font-medium text-gray-700 mb-1.5">New password</label>
+                    <input
+                      type="password"
+                      id="adminNewPassword"
+                      name="newPassword"
+                      value={passwordForm.newPassword}
+                      onChange={handlePasswordChange}
+                      className={inputBase}
+                      placeholder="At least 6 characters"
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="adminConfirmPassword" className="block text-sm font-medium text-gray-700 mb-1.5">Confirm new password</label>
+                    <input
+                      type="password"
+                      id="adminConfirmPassword"
+                      name="confirmPassword"
+                      value={passwordForm.confirmPassword}
+                      onChange={handlePasswordChange}
+                      className={inputBase}
+                      placeholder="Confirm new password"
+                      autoComplete="new-password"
+                    />
+                  </div>
+                  {passwordError && (
+                    <div className="flex items-center gap-2 text-sm text-red-600">
+                      <svg className="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      {passwordError}
+                    </div>
+                  )}
+                  <div className="flex gap-3 pt-1">
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
+                    >
+                      Update password
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowChangePassword(false)
+                        setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+                        setPasswordError('')
+                      }}
+                      className="px-5 py-2.5 border border-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+                </div>
+              )}
             </div>
           </section>
 
