@@ -40,6 +40,17 @@ export async function signup(fullName: string, email: string, phoneNumber: strin
   return data
 }
 
+export async function forgotPassword(email: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+  const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, newPassword }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.message || 'Failed to reset password.')
+  return data
+}
+
 // Session storage: login lasts only until tab/browser is closed (no persistence across tabs)
 const AUTH_TOKEN_KEY = 'token'
 const AUTH_USER_KEY = 'user'

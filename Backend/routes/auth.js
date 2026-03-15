@@ -124,6 +124,44 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// POST /api/auth/forgot-password - set new password by email (no auth required)
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email and new password are required.',
+      });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters.',
+      });
+    }
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No account found with this email.',
+      });
+    }
+    user.password = newPassword;
+    await user.save();
+    res.json({
+      success: true,
+      message: 'Password updated successfully. You can now log in with your new password.',
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error.',
+    });
+  }
+});
+
 // PUT /api/auth/profile - update logged-in user's personal info (protected)
 router.put('/profile', protect, async (req, res) => {
   try {

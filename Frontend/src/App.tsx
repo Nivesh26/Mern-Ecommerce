@@ -13,6 +13,7 @@ import Aboutus from './User Pages/Aboutus'
 import Contact from './User Pages/Contact'
 import Userlogin from './Logins/Userlogin'
 import UserSignup from './Logins/UserSignup'
+import Forgetpassword from './Logins/Forgetpassword'
 import Productdetail from './User Pages/Productdetail'
 import Adminhomepage from './Admin/Adminhomepage'
 import Product from './Admin/Product'
@@ -43,6 +44,7 @@ const AppContent = () => {
           </Route>
           <Route path="/login" element={<Userlogin />} />
           <Route path="/signup" element={<UserSignup />} />
+          <Route path="/forgot-password" element={<Forgetpassword />} />
         </Route>
 
 
