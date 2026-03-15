@@ -8,8 +8,7 @@ import Aboutus from './User Pages/Aboutus'
 import Contact from './User Pages/Contact'
 import Userlogin from './Logins/Userlogin'
 import UserSignup from './Logins/UserSignup'
-import AdminSignup from './Logins/AdminSignup'
-import Adminlogin from './Logins/Adminlogin'
+
 import Productdetail from './User Pages/Productdetail'
 import Adminhomepage from './Admin/Adminhomepage'
 import Product from './Admin/Product'
@@ -38,9 +37,6 @@ const AppContent = () => {
           <Route path="/signup" element={<UserSignup />} />
         </Route>
 
-        {/* Logins Admin*/}
-        <Route path="/adminlogin" element={<Adminlogin />} />
-        <Route path="/adminsignup" element={<AdminSignup />} />
 
         {/* Admin Pages*/}
         <Route path="/adminhomepage" element={<Adminhomepage />} />

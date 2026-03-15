@@ -1,15 +1,37 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
+import { getUser, clearAuth } from '../api/auth'
+
+const defaultProfile = {
+  fullName: 'Sita Sharma',
+  email: 'sita@example.com',
+  phoneNumber: '+977 9801001001'
+}
 
 const Profile = () => {
+  const navigate = useNavigate()
+  const savedUser = getUser()
   const [isEditing, setIsEditing] = useState(false)
-  const [profile, setProfile] = useState({
-    fullName: 'Sita Sharma',
-    email: 'sita@example.com',
-    phoneNumber: '+977 9801001001'
-  })
+  const [profile, setProfile] = useState(() =>
+    savedUser
+      ? { fullName: savedUser.fullName, email: savedUser.email, phoneNumber: savedUser.phoneNumber }
+      : defaultProfile
+  )
   const [form, setForm] = useState(profile)
+
+  useEffect(() => {
+    if (savedUser) {
+      setProfile({ fullName: savedUser.fullName, email: savedUser.email, phoneNumber: savedUser.phoneNumber })
+      setForm({ fullName: savedUser.fullName, email: savedUser.email, phoneNumber: savedUser.phoneNumber })
+    }
+  }, [])
+
+  const handleLogout = () => {
+    clearAuth()
+    navigate('/')
+  }
   const [showChangePassword, setShowChangePassword] = useState(false)
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -378,6 +400,22 @@ const Profile = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
                 Delete my account
+              </button>
+            </div>
+          </section>
+
+          {/* Log out */}
+          <section className="mt-6 bg-white rounded-2xl border border-gray-200/80 shadow-sm overflow-hidden">
+            <div className="p-6">
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-xl font-medium transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Log out
               </button>
             </div>
           </section>

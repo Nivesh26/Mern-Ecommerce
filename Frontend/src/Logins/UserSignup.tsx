@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
+import { signup, setAuthToken, setUser } from '../api/auth'
 
 const UserSignup = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -14,10 +16,13 @@ const UserSignup = () => {
   const [passwordMatch, setPasswordMatch] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+    setError('')
     if (name === 'confirmPassword' && formData.password) {
       setPasswordMatch(value === formData.password)
     }
@@ -26,14 +31,31 @@ const UserSignup = () => {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (formData.password !== formData.confirmPassword) {
       setPasswordMatch(false)
       return
     }
-    console.log('Signup submitted:', formData)
-    // Add signup logic here
+    setError('')
+    setLoading(true)
+    try {
+      const res = await signup(
+        formData.fullName,
+        formData.email,
+        formData.phoneNumber,
+        formData.password
+      )
+      if (res.token && res.user) {
+        setAuthToken(res.token)
+        setUser(res.user)
+        navigate('/')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Signup failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -56,6 +78,11 @@ const UserSignup = () => {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
+                {error && (
+                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+                    {error}
+                  </div>
+                )}
                 <div>
                   <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Full name
@@ -228,9 +255,10 @@ const UserSignup = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-green-600 text-white py-3.5 rounded-lg font-semibold hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                  disabled={loading}
+                  className="w-full bg-green-600 text-white py-3.5 rounded-lg font-semibold hover:bg-green-700 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Create account
+                  {loading ? 'Creating account...' : 'Create account'}
                 </button>
               </form>
 
