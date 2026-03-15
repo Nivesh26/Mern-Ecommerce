@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { CartProvider } from './context/CartContext'
@@ -33,7 +33,8 @@ const AppContent = () => {
           <Route path="/new" element={<New />} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/product" element={<Productdetail />} />
+          <Route path="/product" element={<Navigate to="/shop" replace />} />
+          <Route path="/product/:id" element={<Productdetail />} />
           {/* Profile & Cart – require login; redirect to /login if not logged in */}
           <Route element={<RequireAuth />}>
             <Route path="/cart" element={<Cart />} />

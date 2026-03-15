@@ -1,19 +1,10 @@
-import { useState } from 'react'
-import { useLocation, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
 import SuggestionProduct from '../User Components/SuggestionProduct'
 import { useCart } from '../context/CartContext'
-import productImage from '../assets/176775850311hn1.webp'
-
-// Single default product when page is opened directly (no state from shop)
-const DEFAULT_PRODUCT = {
-  name: 'Dant Kanti Natural Toothpaste 43g (Buy 11+ 1 Free) Hanger',
-  price: 450,
-  image: productImage,
-  category: 'Digestive Care',
-  description: 'Authentic Ayurvedic toothpaste with natural ingredients for strong teeth and healthy gums. Made with traditional herbs for complete oral care.'
-}
+import { getProduct, productImageUrl, type ProductItem } from '../api/products'
 
 const SAMPLE_REVIEWS = [
   { name: 'Sita Sharma', rating: 5, date: 'Mar 5, 2025', comment: 'Very effective and natural. My whole family uses it. Teeth feel clean and fresh.' },
@@ -40,32 +31,71 @@ const StarRating = ({ rating, size = 'md' }: { rating: number; size?: 'sm' | 'md
 }
 
 const Productdetail = () => {
-  const location = useLocation()
-  const productFromShop = location.state?.product as { id?: number; name: string; price: number; image: string; category: string; description?: string } | undefined
-  const product = productFromShop ?? DEFAULT_PRODUCT
-  const description = product.description ?? 'Authentic Ayurvedic product from Nivesh.'
-
+  const { id } = useParams<{ id: string }>()
+  const [product, setProduct] = useState<ProductItem | null>(null)
+  const [loading, setLoading] = useState(!!id)
+  const [error, setError] = useState('')
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' })
   const { addItem } = useCart()
 
+  useEffect(() => {
+    if (!id) return
+    let cancelled = false
+    setLoading(true)
+    setError('')
+    getProduct(id)
+      .then((res) => { if (!cancelled) setProduct(res.product) })
+      .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load product') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [id])
+
   const handleAddToCart = () => {
+    if (!product) return
+    const firstImage = (product.imageUrls || [])[0]
     addItem({
-      id: 'id' in product ? product.id : undefined,
+      id: product._id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: firstImage ? productImageUrl(firstImage) : '',
       category: product.category,
-      description
+      description: product.description
     })
   }
 
   const handleReviewSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Static for now: do not add reviews, just reset form
     setReviewForm({ rating: 5, comment: '' })
   }
 
   const reviews = SAMPLE_REVIEWS
+
+  if (loading || (!product && id)) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1 py-8 px-4 flex items-center justify-center">
+          <p className="text-gray-500">Loading product…</p>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error || !product) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1 py-8 px-4 flex flex-col items-center justify-center gap-4">
+          <p className="text-red-600">{error || 'Product not found.'}</p>
+          <Link to="/shop" className="text-green-600 hover:text-green-700 font-medium">Back to Shop</Link>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  const description = product.description || 'Authentic Ayurvedic product from Nivesh.'
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -73,7 +103,6 @@ const Productdetail = () => {
 
       <main className="flex-1 py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          {/* Breadcrumb */}
           <nav className="text-sm text-gray-500 mb-6">
             <Link to="/" className="hover:text-green-600">Home</Link>
             <span className="mx-2">/</span>
@@ -83,16 +112,32 @@ const Productdetail = () => {
           </nav>
 
           <div className="bg-white rounded-xl shadow-md overflow-hidden flex flex-col md:flex-row">
-            {/* Product Image */}
-            <div className="md:w-1/2 bg-gray-100 flex items-center justify-center p-6 md:p-10">
-              <img
-                src={typeof product.image === 'string' ? product.image : (product.image as { default?: string })?.default ?? productImage}
-                alt={product.name}
-                className="w-full max-w-md object-contain rounded-lg"
-              />
+            <div className="md:w-1/2 bg-gray-100 flex flex-col items-center justify-center p-6 md:p-10">
+              {(product.imageUrls || []).length > 0 ? (
+                <>
+                  <img
+                    src={productImageUrl((product.imageUrls || [])[0])}
+                    alt={product.name}
+                    className="w-full max-w-md object-contain rounded-lg"
+                  />
+                  {(product.imageUrls || []).length > 1 && (
+                    <div className="flex gap-2 mt-3 flex-wrap justify-center">
+                      {(product.imageUrls || []).map((url, i) => (
+                        <img
+                          key={i}
+                          src={productImageUrl(url)}
+                          alt=""
+                          className="w-14 h-14 rounded-lg object-cover border border-gray-200"
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="w-full max-w-md h-64 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">No image</div>
+              )}
             </div>
 
-            {/* Product Info */}
             <div className="md:w-1/2 p-6 md:p-10 flex flex-col justify-center">
               <p className="text-sm font-medium text-green-600 mb-1">{product.category}</p>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">{product.name}</h1>
@@ -116,14 +161,12 @@ const Productdetail = () => {
             </div>
           </div>
 
-          {/* Reviews Section */}
           <section className="mt-10 bg-white rounded-xl shadow-md p-6 md:p-8">
             <h2 className="text-xl font-bold text-gray-800 mb-2">Customer Reviews</h2>
             <p className="text-gray-500 text-sm mb-6">
               {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
             </p>
 
-            {/* Write a review */}
             <form onSubmit={handleReviewSubmit} className="mb-8 pb-8 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Write a review</h3>
               <div className="space-y-4">
@@ -170,7 +213,6 @@ const Productdetail = () => {
               </div>
             </form>
 
-            {/* Review list */}
             <div className="space-y-6">
               {reviews.map((review, index) => (
                 <div key={index} className="border-b border-gray-100 last:border-0 pb-6 last:pb-0">
