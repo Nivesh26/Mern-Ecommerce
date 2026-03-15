@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
 import { getUser, clearAuth, deleteAccount } from '../api/auth'
@@ -30,6 +31,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     clearAuth()
+    toast.info('Logged out.')
     navigate('/')
   }
   const [showChangePassword, setShowChangePassword] = useState(false)
@@ -94,9 +96,12 @@ const Profile = () => {
       await deleteAccount()
       clearAuth()
       setShowDeleteConfirm(false)
+      toast.success('Account deleted.')
       navigate('/')
     } catch (err) {
-      setDeleteError(err instanceof Error ? err.message : 'Failed to delete account.')
+      const message = err instanceof Error ? err.message : 'Failed to delete account.'
+      setDeleteError(message)
+      toast.error(message)
     } finally {
       setDeleting(false)
     }

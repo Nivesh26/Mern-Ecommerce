@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
 import { login, setAuthToken, setUser } from '../api/auth'
@@ -29,6 +30,7 @@ const Userlogin = () => {
       if (res.token && res.user) {
         setAuthToken(res.token)
         setUser(res.user)
+        toast.success('Logged in successfully.')
         if (res.user.role === 'admin') {
           navigate('/adminhomepage')
         } else {
@@ -36,7 +38,9 @@ const Userlogin = () => {
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      const message = err instanceof Error ? err.message : 'Login failed'
+      setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }

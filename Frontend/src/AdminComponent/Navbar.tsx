@@ -1,8 +1,17 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { clearAuth } from '../api/auth'
 
 const Navbar = () => {
   const location = useLocation()
+  const navigate = useNavigate()
   const pathname = location.pathname
+
+  const handleLogout = () => {
+    clearAuth()
+    toast.info('Logged out.')
+    navigate('/')
+  }
 
   const navLinkClass = (path: string) =>
     `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -77,15 +86,16 @@ const Navbar = () => {
 
       {/* Bottom section */}
       <div className="p-4 border-t border-gray-700 space-y-1">
-        <Link
-          to="/"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-green-300 transition-colors text-sm"
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:bg-gray-700 hover:text-green-300 transition-colors text-sm text-left"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
           Logout
-        </Link>
+        </button>
       </div>
     </aside>
   )

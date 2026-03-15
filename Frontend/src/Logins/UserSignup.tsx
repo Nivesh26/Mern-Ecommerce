@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
-import { signup, setAuthToken, setUser } from '../api/auth'
+import { signup } from '../api/auth'
 
 const UserSignup = () => {
   const navigate = useNavigate()
@@ -44,19 +45,18 @@ const UserSignup = () => {
     setError('')
     setLoading(true)
     try {
-      const res = await signup(
+      await signup(
         formData.fullName,
         formData.email,
         formData.phoneNumber,
         formData.password
       )
-      if (res.token && res.user) {
-        setAuthToken(res.token)
-        setUser(res.user)
-        navigate('/')
-      }
+      toast.success('Account created. Please log in.')
+      navigate('/login')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Signup failed')
+      const message = err instanceof Error ? err.message : 'Signup failed'
+      setError(message)
+      toast.error(message)
     } finally {
       setLoading(false)
     }
