@@ -142,4 +142,50 @@ router.delete('/account', protect, async (req, res) => {
   }
 });
 
+// GET /api/auth/customers - list all customers (role 'user'), admin only (protected)
+router.get('/customers', protect, async (req, res) => {
+  try {
+    const admin = await User.findById(req.userId);
+    if (!admin || admin.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Not authorized to view customers.' });
+    }
+    const customers = await User.find({ role: 'user' })
+      .select('-password')
+      .sort({ createdAt: 1 })
+      .lean();
+    res.json({ success: true, customers });
+  } catch (error) {
+    console.error('Get customers error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error while fetching customers.',
+    });
+  }
+});
+
+// DELETE /api/auth/customers/:id - delete a customer (admin only, protected)
+router.delete('/customers/:id', protect, async (req, res) => {
+  try {
+    const admin = await User.findById(req.userId);
+    if (!admin || admin.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Not authorized.' });
+    }
+    const target = await User.findById(req.params.id);
+    if (!target) {
+      return res.status(404).json({ success: false, message: 'Customer not found.' });
+    }
+    if (target.role === 'admin') {
+      return res.status(403).json({ success: false, message: 'Cannot delete an admin.' });
+    }
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true, message: 'Customer deleted.' });
+  } catch (error) {
+    console.error('Delete customer error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Server error while deleting customer.',
+    });
+  }
+});
+
 export default router;

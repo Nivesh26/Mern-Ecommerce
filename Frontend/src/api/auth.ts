@@ -83,3 +83,36 @@ export async function deleteAccount(): Promise<{ success: boolean; message: stri
   if (!res.ok) throw new Error(data?.message || 'Failed to delete account.')
   return data
 }
+
+export type CustomerItem = {
+  _id: string
+  fullName: string
+  email: string
+  phoneNumber: string
+  address?: string
+  role: string
+  createdAt?: string
+}
+
+export async function getCustomers(): Promise<{ success: boolean; customers: CustomerItem[] }> {
+  const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
+  if (!token) throw new Error('Not logged in.')
+  const res = await fetch(`${API_URL}/api/auth/customers`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.message || 'Failed to load customers.')
+  return data
+}
+
+export async function deleteCustomer(id: string): Promise<{ success: boolean; message: string }> {
+  const token = sessionStorage.getItem(AUTH_TOKEN_KEY)
+  if (!token) throw new Error('Not logged in.')
+  const res = await fetch(`${API_URL}/api/auth/customers/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.message || 'Failed to delete customer.')
+  return data
+}
