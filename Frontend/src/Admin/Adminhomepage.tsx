@@ -1,41 +1,70 @@
+import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../AdminComponent/Navbar'
+import { getProducts, type ProductItem } from '../api/products'
+import { getCustomers } from '../api/auth'
 
-const PIE_DATA = [
-  { label: 'Digestive Care', value: 28, color: '#22c55e' },
-  { label: 'Immunity Boosters', value: 32, color: '#3b82f6' },
-  { label: 'Herbal Supplements', value: 22, color: '#f59e0b' },
-  { label: 'Skin & Hair Care', value: 18, color: '#ec4899' }
-]
-
-const RECENT_ORDERS = [
-  { id: '#ORD-1842', customer: 'Sita Sharma', amount: 1250, status: 'Delivered', date: 'Mar 10, 2025' },
-  { id: '#ORD-1841', customer: 'Ram Kumar', amount: 890, status: 'Shipped', date: 'Mar 10, 2025' },
-  { id: '#ORD-1840', customer: 'Anita Gurung', amount: 2100, status: 'Processing', date: 'Mar 9, 2025' },
-  { id: '#ORD-1839', customer: 'Bikash Thapa', amount: 450, status: 'Delivered', date: 'Mar 9, 2025' },
-  { id: '#ORD-1838', customer: 'Priya Adhikari', amount: 1680, status: 'Shipped', date: 'Mar 8, 2025' }
-]
-
-const TOP_PRODUCTS = [
-  { name: 'Special Chyawanprash', sold: 142, revenue: 'Rs. 92,300' },
-  { name: "Cow's Ghee", sold: 128, revenue: 'Rs. 44,800' },
-  { name: 'Dant Kanti Toothpaste', sold: 95, revenue: 'Rs. 42,750' },
-  { name: 'Soan Papdi', sold: 78, revenue: 'Rs. 42,900' }
-]
-
-const statusColor: Record<string, string> = {
-  Delivered: 'bg-green-100 text-green-800',
-  Shipped: 'bg-blue-100 text-blue-800',
-  Processing: 'bg-amber-100 text-amber-800',
-  Pending: 'bg-gray-100 text-gray-800'
+const CATEGORY_COLORS: Record<string, string> = {
+  'Digestive Care': '#22c55e',
+  'Immunity Boosters': '#3b82f6',
+  'Herbal Supplements': '#f59e0b',
+  'Skin & Hair Care': '#ec4899',
+  'Oils & Massage': '#8b5cf6',
+  'Ayurvedic Medicines': '#06b6d4',
 }
+const DEFAULT_COLOR = '#94a3b8'
 
 const Adminhomepage = () => {
+  const [products, setProducts] = useState<ProductItem[]>([])
+  const [customers, setCustomers] = useState<{ _id: string; fullName: string; email: string }[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setError('')
+    Promise.all([getProducts(), getCustomers()])
+      .then(([prodRes, custRes]) => {
+        if (!cancelled) {
+          setProducts(prodRes.products || [])
+          setCustomers(custRes.customers || [])
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load data')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  const productCount = products.length
+  const inStockCount = products.filter((p) => (p.stock ?? 0) > 0).length
+  const lowStockCount = products.filter((p) => (p.stock ?? 0) <= 5 && (p.stock ?? 0) >= 0).length
+  const customerCount = customers.length
+
+  const categoryCounts = products.reduce<Record<string, number>>((acc, p) => {
+    const cat = p.category || 'Other'
+    acc[cat] = (acc[cat] || 0) + 1
+    return acc
+  }, {})
+  const totalForPie = Object.values(categoryCounts).reduce((a, b) => a + b, 0)
+  const pieData = totalForPie > 0
+    ? Object.entries(categoryCounts).map(([label, count]) => ({
+        label,
+        value: Math.round((count / totalForPie) * 100),
+        color: CATEGORY_COLORS[label] || DEFAULT_COLOR,
+      }))
+    : []
+
   const size = 200
   const cx = size / 2
   const cy = size / 2
   const r = size / 2 - 8
   let currentAngle = -90
-  const segments = PIE_DATA.map((d) => {
+  const segments = pieData.map((d) => {
     const ratio = d.value / 100
     const angleDeg = ratio * 360
     const startAngle = (currentAngle * Math.PI) / 180
@@ -58,6 +87,17 @@ const Adminhomepage = () => {
   }
   const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="ml-64 min-h-screen p-6">
+          <div className="rounded-xl bg-red-50 border border-red-200 text-red-700 px-4 py-3">{error}</div>
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
@@ -69,28 +109,33 @@ const Adminhomepage = () => {
             <p className="text-gray-500 text-sm mt-0.5">Here’s what’s happening with your store today.</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
-            <button
-              type="button"
-              className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors"
-              aria-label="Notifications"
+            {/* Static alert icon – no dropdown, for display only */}
+            <span
+              className="relative inline-flex p-2 rounded-lg text-gray-500 bg-gray-100 border border-gray-200 cursor-default"
+              title="Alerts"
+              aria-label="Alerts (static)"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
               </svg>
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" aria-hidden />
-            </button>
+              <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full" aria-hidden />
+            </span>
             <p className="text-sm text-gray-500">{today}</p>
           </div>
         </div>
 
-        {/* Summary cards */}
+        {/* Summary cards – real data */}
+        {loading ? (
+          <div className="mt-6 text-gray-500">Loading dashboard…</div>
+        ) : (
+          <>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md transition-shadow">
+          <Link to="/adminorders" className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md hover:border-green-200 transition-all block">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Sales</p>
-                <p className="text-2xl font-bold text-gray-800 mt-1">Rs. 3,16,000</p>
-                <p className="text-xs text-green-600 mt-1 font-medium">+12% vs last month</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">—</p>
+                <p className="text-xs text-gray-500 mt-1">Connect orders to see sales</p>
               </div>
               <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,13 +143,13 @@ const Adminhomepage = () => {
                 </svg>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md transition-shadow">
+          </Link>
+          <Link to="/adminorders" className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md hover:border-blue-200 transition-all block">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Orders</p>
-                <p className="text-2xl font-bold text-gray-800 mt-1">248</p>
-                <p className="text-xs text-green-600 mt-1 font-medium">+8% vs last month</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">—</p>
+                <p className="text-xs text-gray-500 mt-1">View orders page</p>
               </div>
               <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,13 +157,13 @@ const Adminhomepage = () => {
                 </svg>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md transition-shadow">
+          </Link>
+          <Link to="/adminproduct" className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md hover:border-violet-200 transition-all block">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Products</p>
-                <p className="text-2xl font-bold text-gray-800 mt-1">24</p>
-                <p className="text-xs text-gray-500 mt-1">Active listings</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">{productCount}</p>
+                <p className="text-xs text-gray-500 mt-1">{inStockCount} in stock</p>
               </div>
               <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,13 +171,13 @@ const Adminhomepage = () => {
                 </svg>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md transition-shadow">
+          </Link>
+          <Link to="/admincustomer" className="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:shadow-md hover:border-amber-200 transition-all block">
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-500">Customers</p>
-                <p className="text-2xl font-bold text-gray-800 mt-1">1,420</p>
-                <p className="text-xs text-green-600 mt-1 font-medium">+5% vs last month</p>
+                <p className="text-2xl font-bold text-gray-800 mt-1">{customerCount.toLocaleString()}</p>
+                <p className="text-xs text-gray-500 mt-1">Registered users</p>
               </div>
               <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
                 <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,48 +185,54 @@ const Adminhomepage = () => {
                 </svg>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
 
-        {/* Middle row: Pie chart + Recent Orders */}
+        {/* Middle row: Products by category + Recent Orders */}
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sales by Category */}
+          {/* Products by Category */}
           <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800">Sales by Category</h2>
-            <p className="text-sm text-gray-500 mt-0.5">Share of total sales</p>
+            <h2 className="text-lg font-semibold text-gray-800">Products by Category</h2>
+            <p className="text-sm text-gray-500 mt-0.5">Share of catalog</p>
             <div className="mt-4 flex flex-col sm:flex-row items-center gap-6">
-              <svg width={size} height={size} className="shrink-0">
-                {segments.map((seg) => (
-                  <path
-                    key={seg.label}
-                    d={seg.path}
-                    fill={seg.color}
-                    className="hover:opacity-90 transition-opacity"
-                    stroke="white"
-                    strokeWidth={2}
-                  />
-                ))}
-              </svg>
-              <ul className="space-y-2 w-full">
-                {PIE_DATA.map((d) => (
-                  <li key={d.label} className="flex items-center gap-2 text-sm">
-                    <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
-                    <span className="text-gray-700">{d.label}</span>
-                    <span className="font-medium text-gray-800 ml-auto">{d.value}%</span>
-                  </li>
-                ))}
-              </ul>
+              {pieData.length > 0 ? (
+                <>
+                  <svg width={size} height={size} className="shrink-0">
+                    {segments.map((seg) => (
+                      <path
+                        key={seg.label}
+                        d={seg.path}
+                        fill={seg.color}
+                        className="hover:opacity-90 transition-opacity"
+                        stroke="white"
+                        strokeWidth={2}
+                      />
+                    ))}
+                  </svg>
+                  <ul className="space-y-2 w-full">
+                    {pieData.map((d) => (
+                      <li key={d.label} className="flex items-center gap-2 text-sm">
+                        <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
+                        <span className="text-gray-700">{d.label}</span>
+                        <span className="font-medium text-gray-800 ml-auto">{d.value}%</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="text-gray-500 text-sm py-4">No products yet. Add products to see breakdown.</p>
+              )}
             </div>
           </div>
 
-          {/* Recent Orders */}
+          {/* Recent Orders – no orders API yet */}
           <div className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6 border border-gray-200 overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">Recent Orders</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Latest 5 orders</p>
+                <p className="text-sm text-gray-500 mt-0.5">Latest orders</p>
               </div>
-              <a href="/adminhomepage" className="text-sm font-medium text-green-600 hover:text-green-700">View all</a>
+              <Link to="/adminorders" className="text-sm font-medium text-green-600 hover:text-green-700">View all</Link>
             </div>
             <div className="overflow-x-auto -mx-6 px-6">
               <table className="min-w-full divide-y divide-gray-200">
@@ -195,54 +246,53 @@ const Adminhomepage = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {RECENT_ORDERS.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="py-3 text-sm font-medium text-gray-800">{order.id}</td>
-                      <td className="py-3 text-sm text-gray-600">{order.customer}</td>
-                      <td className="py-3 text-sm text-gray-800 text-right tabular-nums">Rs. {order.amount.toLocaleString()}</td>
-                      <td className="py-3">
-                        <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${statusColor[order.status] ?? 'bg-gray-100 text-gray-800'}`}>
-                          {order.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-sm text-gray-500">{order.date}</td>
-                    </tr>
-                  ))}
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500 text-sm">No orders yet. Orders are managed on the Orders page.</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
 
-        {/* Top Products */}
+        {/* Products list – real data */}
         <div className="mt-6 bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-800">Top Selling Products</h2>
-          <p className="text-sm text-gray-500 mt-0.5">By units sold (sample data)</p>
+          <h2 className="text-lg font-semibold text-gray-800">Products</h2>
+          <p className="text-sm text-gray-500 mt-0.5">Your catalog (latest first)</p>
           <div className="mt-4 overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr>
-                  <th className="py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
-                  <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Units Sold</th>
-                  <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Revenue</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {TOP_PRODUCTS.map((product) => (
-                  <tr key={product.name} className="hover:bg-gray-50">
-                    <td className="py-3 text-sm font-medium text-gray-800">{product.name}</td>
-                    <td className="py-3 text-sm text-gray-600 text-right tabular-nums">{product.sold}</td>
-                    <td className="py-3 text-sm font-medium text-gray-800 text-right tabular-nums">{product.revenue}</td>
+            {products.length === 0 ? (
+              <p className="py-6 text-center text-gray-500 text-sm">No products yet. Add products in the Products page.</p>
+            ) : (
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Product</th>
+                    <th className="py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+                    <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                    <th className="py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {products.slice(0, 8).map((product) => (
+                    <tr key={product._id} className="hover:bg-gray-50">
+                      <td className="py-3 text-sm font-medium text-gray-800">{product.name}</td>
+                      <td className="py-3 text-sm text-gray-600">{product.category}</td>
+                      <td className="py-3 text-sm text-right tabular-nums">{(product.stock ?? 0)}</td>
+                      <td className="py-3 text-sm font-medium text-gray-800 text-right tabular-nums">Rs. {product.price.toLocaleString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
+          {products.length > 8 && (
+            <p className="mt-2 text-sm text-gray-500 text-right">Showing 8 of {products.length}. <Link to="/adminproduct" className="text-green-600 hover:text-green-700">View all</Link></p>
+          )}
         </div>
 
-        {/* Quick info strip */}
+        {/* Quick info strip – real low stock */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-4">
+          <Link to="/adminorders" className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-4 hover:bg-green-100/80 transition-colors">
             <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
               <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -250,10 +300,10 @@ const Adminhomepage = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-green-800">Orders delivered today</p>
-              <p className="text-2xl font-bold text-green-900">18</p>
+              <p className="text-2xl font-bold text-green-900">—</p>
             </div>
-          </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4">
+          </Link>
+          <Link to="/adminorders" className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-4 hover:bg-amber-100/80 transition-colors">
             <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
               <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -261,10 +311,10 @@ const Adminhomepage = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-amber-800">Pending orders</p>
-              <p className="text-2xl font-bold text-amber-900">7</p>
+              <p className="text-2xl font-bold text-amber-900">—</p>
             </div>
-          </div>
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-4">
+          </Link>
+          <Link to="/adminproduct" className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center gap-4 hover:bg-blue-100/80 transition-colors">
             <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -272,10 +322,12 @@ const Adminhomepage = () => {
             </div>
             <div>
               <p className="text-sm font-medium text-blue-800">Low stock alerts</p>
-              <p className="text-2xl font-bold text-blue-900">2</p>
+              <p className="text-2xl font-bold text-blue-900">{lowStockCount}</p>
             </div>
-          </div>
+          </Link>
         </div>
+          </>
+        )}
       </main>
     </div>
   )
