@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { CartProvider } from './context/CartContext'
+import { StoreStatusProvider } from './context/StoreStatusContext'
 import UserLayout from './User Components/UserLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import RequireAuth from './components/RequireAuth'
@@ -63,10 +64,12 @@ const AppContent = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <AppContent />
-        <ToastContainer position="top-right" autoClose={3000} theme="light" />
-      </CartProvider>
+      <StoreStatusProvider>
+        <CartProvider>
+          <AppContent />
+          <ToastContainer position="top-right" autoClose={3000} theme="light" />
+        </CartProvider>
+      </StoreStatusProvider>
     </BrowserRouter>
   )
 }

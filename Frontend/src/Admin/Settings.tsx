@@ -2,9 +2,12 @@ import { useState } from 'react'
 import { toast } from 'react-toastify'
 import Navbar from '../AdminComponent/Navbar'
 import { updatePassword } from '../api/auth'
+import { getStoreStatus, updateStoreStatus } from '../api/store'
+import { useStoreStatus } from '../context/StoreStatusContext'
 
 const Settings = () => {
-  const [storeClosed, setStoreClosed] = useState(false)
+  const { storeOpen, refreshStoreStatus } = useStoreStatus()
+  const [storeStatusLoading, setStoreStatusLoading] = useState(false)
   const [showChangePassword, setShowChangePassword] = useState(false)
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -23,6 +26,20 @@ const Settings = () => {
     newMessages: true,
     weeklyReport: false
   })
+
+  const handleToggleStore = async () => {
+    const newOpen = !storeOpen
+    setStoreStatusLoading(true)
+    try {
+      await updateStoreStatus(newOpen)
+      await refreshStoreStatus()
+      toast.success(newOpen ? 'Store is now open.' : 'Store is now closed.')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to update store status.')
+    } finally {
+      setStoreStatusLoading(false)
+    }
+  }
 
   const toggleNotification = (key: keyof typeof notifications) => {
     setNotifications((prev) => ({ ...prev, [key]: !prev[key] }))
@@ -287,14 +304,15 @@ const Settings = () => {
             <div className="p-6">
               <button
                 type="button"
-                onClick={() => setStoreClosed((v) => !v)}
+                onClick={handleToggleStore}
+                disabled={storeStatusLoading}
                 className={
-                  storeClosed
-                    ? 'w-full px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors'
-                    : 'w-full px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors'
+                  storeOpen
+                    ? 'w-full px-5 py-2.5 bg-amber-600 text-white rounded-lg font-medium hover:bg-amber-700 transition-colors disabled:opacity-70'
+                    : 'w-full px-5 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-70'
                 }
               >
-                {storeClosed ? 'Open store' : 'Close store'}
+                {storeStatusLoading ? 'Updating…' : storeOpen ? 'Close store' : 'Open store'}
               </button>
             </div>
           </section>

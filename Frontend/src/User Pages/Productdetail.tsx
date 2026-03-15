@@ -5,6 +5,7 @@ import Footer from '../User Components/Footer'
 import SuggestionProduct from '../User Components/SuggestionProduct'
 import { toast } from 'react-toastify'
 import { useCart } from '../context/CartContext'
+import { useStoreStatus } from '../context/StoreStatusContext'
 import { getProduct, productImageUrl, type ProductItem } from '../api/products'
 
 const SAMPLE_REVIEWS = [
@@ -39,6 +40,7 @@ const Productdetail = () => {
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' })
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const { addItem } = useCart()
+  const { storeOpen } = useStoreStatus()
 
   useEffect(() => {
     if (!id) return
@@ -111,6 +113,14 @@ const Productdetail = () => {
 
       <main className="flex-1 py-8 px-4">
         <div className="max-w-6xl mx-auto">
+          {!storeOpen && (
+            <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-medium flex items-center gap-3">
+              <svg className="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Store is closed. You can browse but orders are not being accepted at the moment.
+            </div>
+          )}
           <nav className="text-sm text-gray-500 mb-6">
             <Link to="/" className="hover:text-green-600">Home</Link>
             <span className="mx-2">/</span>

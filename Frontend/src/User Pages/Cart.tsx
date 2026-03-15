@@ -4,9 +4,11 @@ import { toast } from 'react-toastify'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
 import { useCart } from '../context/CartContext'
+import { useStoreStatus } from '../context/StoreStatusContext'
 
 const Cart = () => {
   const { items, removeItem, updateQuantity } = useCart()
+  const { storeOpen } = useStoreStatus()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const selectedItems = items.filter((i) => selectedIds.has(i.id))
   const subtotal = selectedItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
@@ -59,6 +61,14 @@ const Cart = () => {
 
       <main className="flex-1 py-8 px-4 sm:py-10">
         <div className="max-w-6xl mx-auto">
+          {!storeOpen && (
+            <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 font-medium flex items-center gap-3">
+              <svg className="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Store is closed. Orders are not being accepted at the moment.
+            </div>
+          )}
           <div className="mb-8">
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">Your Cart</h1>
           </div>
@@ -88,12 +98,13 @@ const Cart = () => {
               <div className="flex-1">
                 {/* Top bar: Select all + Delete */}
                 <div className="bg-white border border-gray-200 rounded-t-xl shadow-sm flex items-center justify-between px-5 py-3.5">
-                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <label className={`flex items-center gap-3 select-none ${storeOpen ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
                     <input
                       type="checkbox"
                       checked={allSelected}
-                      onChange={(e) => selectAll(e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-green-600 accent-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-0 cursor-pointer"
+                      onChange={(e) => storeOpen && selectAll(e.target.checked)}
+                      disabled={!storeOpen}
+                      className="w-4 h-4 rounded border-gray-300 text-green-600 accent-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-0 cursor-pointer disabled:cursor-not-allowed"
                     />
                     <span className="text-sm font-medium text-gray-700 tracking-wide">
                       SELECT ALL ({items.length} ITEM{items.length !== 1 ? 'S' : ''})
@@ -120,12 +131,13 @@ const Cart = () => {
                       className="flex flex-col sm:flex-row gap-4 p-5 sm:items-center hover:bg-gray-50/50 transition-colors"
                     >
                       <div className="flex items-start sm:items-center gap-4 flex-1 min-w-0">
-                        <label className="shrink-0 cursor-pointer pt-0.5 sm:pt-0">
+                        <label className={`shrink-0 pt-0.5 sm:pt-0 ${storeOpen ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'}`}>
                           <input
                             type="checkbox"
                             checked={selectedIds.has(item.id)}
-                            onChange={() => toggleSelect(item.id)}
-                            className="w-4 h-4 rounded border-gray-300 text-green-600 accent-green-600 focus:ring-2 focus:ring-green-500 cursor-pointer"
+                            onChange={() => storeOpen && toggleSelect(item.id)}
+                            disabled={!storeOpen}
+                            className="w-4 h-4 rounded border-gray-300 text-green-600 accent-green-600 focus:ring-2 focus:ring-green-500 cursor-pointer disabled:cursor-not-allowed"
                           />
                         </label>
                         <div className="w-24 h-24 sm:w-28 sm:h-28 shrink-0 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shadow-sm">
@@ -240,9 +252,10 @@ const Cart = () => {
                     </Link>
                     <button
                       type="button"
-                      className="w-full bg-green-600 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors shadow-sm"
+                      disabled={!storeOpen}
+                      className="w-full bg-green-600 text-white px-4 py-3 rounded-xl text-sm font-semibold hover:bg-green-700 transition-colors shadow-sm disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-green-600"
                     >
-                      Proceed to Checkout
+                      {storeOpen ? 'Proceed to Checkout' : 'Checkout unavailable (store closed)'}
                     </button>
                   </div>
                 </div>
