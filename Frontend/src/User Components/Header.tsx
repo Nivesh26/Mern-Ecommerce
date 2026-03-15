@@ -1,4 +1,3 @@
-import profile from "../assets/react.svg"
 import { Link } from 'react-router-dom'
 import { FaUser, FaShoppingCart } from 'react-icons/fa'
 import { getUser } from '../api/auth'
@@ -11,7 +10,6 @@ const Header = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
         <div className="flex items-center space-x-2">
           <Link to="/" className="flex items-center space-x-2">
-            <img src={profile} alt="Nivesh" className="h-12 cursor-pointer" />
             <span className="text-xl font-bold text-gray-800">Nivesh</span>
           </Link>
         </div>

@@ -1,5 +1,4 @@
-import { Link } from 'react-router-dom';
-import profile from "../assets/react.svg";
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
   return (
@@ -9,7 +8,6 @@ const Footer = () => {
           {/* Company Info */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center space-x-2">
-              <img src={profile} alt="Nivesh" className="h-12 cursor-pointer" />
               <span className="text-xl font-bold">Nivesh</span>
             </Link>
             <p className="text-gray-400 text-sm">

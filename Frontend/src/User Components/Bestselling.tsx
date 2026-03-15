@@ -1,41 +1,8 @@
 import { Link } from 'react-router-dom'
-import productImage from '../assets/176775850311hn1.webp'
-import prdoductImage2 from '../assets/SpecialChyawanprash.webp'
-import prdoductImage3 from '../assets/SoanPapdi.webp'
-import productImage4 from '../assets/Ghee.webp'
+import { productImageUrl, type ProductItem } from '../api/products'
 
-const Bestselling = () => {
-  const products = [
-    {
-      id: 1,
-      name: 'Dant Kanti Natural Toothpaste 43g (Buy 11+ 1 Free) Hanger',
-      price: 450,
-      image: productImage,
-      category: 'Digestive Care'
-    },
-    {
-      id: 2,
-      name: 'Special Chyawanprash',
-      price: 650,
-      image: prdoductImage2,
-      category: 'Immunity Boosters'
-    },
-    
-    {
-      id: 3,
-      name: 'Soan Papdi',
-      price: 550,
-      image: prdoductImage3,
-      category: 'Herbal Supplements'
-    },
-    {
-      id: 4,
-      name: 'Cow\'s Ghee',
-      price: 350,
-      image: productImage4,
-      category: 'Skin & Hair Care'
-    }
-  ]
+const Bestselling = ({ products, loading }: { products: ProductItem[]; loading?: boolean }) => {
+  const bestSelling = products.slice(0, 4)
 
   return (
     <section className="w-full bg-gray-50 py-8">
@@ -46,38 +13,47 @@ const Bestselling = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
-            >
-              {/* Product Image */}
-              <Link to="/product" state={{ product }} className="block relative overflow-hidden bg-gray-100">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </Link>
+        {loading ? (
+          <div className="text-center py-12 text-gray-500">Loading products…</div>
+        ) : bestSelling.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">No products yet.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {bestSelling.map((product) => {
+              const imageUrl = (product.imageUrls || [])[0]
+              return (
+                <div
+                  key={product._id}
+                  className="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                >
+                  <Link to={`/product/${product._id}`} className="block relative overflow-hidden bg-gray-100">
+                    {imageUrl ? (
+                      <img
+                        src={productImageUrl(imageUrl)}
+                        alt={product.name}
+                        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-64 flex items-center justify-center text-gray-400 bg-gray-100">No image</div>
+                    )}
+                  </Link>
 
-              {/* Product Info */}
-              <div className="p-4">
-                <p className="text-sm text-gray-500 mb-1">{product.category}</p>
-                <Link to="/product" state={{ product }}>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors line-clamp-1">
-                    {product.name}
-                  </h3>
-                </Link>
-
-                {/* Price */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-2xl font-bold text-gray-800">Rs. {product.price}</span>
+                  <div className="p-4">
+                    <p className="text-sm text-gray-500 mb-1">{product.category}</p>
+                    <Link to={`/product/${product._id}`}>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 group-hover:text-green-600 transition-colors line-clamp-1">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-2xl font-bold text-gray-800">Rs. {product.price}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
     </section>
   )
