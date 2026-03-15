@@ -36,6 +36,7 @@ const Productdetail = () => {
   const [loading, setLoading] = useState(!!id)
   const [error, setError] = useState('')
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' })
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const { addItem } = useCart()
 
   useEffect(() => {
@@ -44,7 +45,12 @@ const Productdetail = () => {
     setLoading(true)
     setError('')
     getProduct(id)
-      .then((res) => { if (!cancelled) setProduct(res.product) })
+      .then((res) => {
+        if (!cancelled) {
+          setProduct(res.product)
+          setSelectedImageIndex(0)
+        }
+      })
       .catch((err) => { if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load product') })
       .finally(() => { if (!cancelled) setLoading(false) })
     return () => { cancelled = true }
@@ -115,26 +121,38 @@ const Productdetail = () => {
             <div className="md:w-1/2 bg-gray-100 flex flex-col items-center justify-center p-6 md:p-10">
               {(product.imageUrls || []).length > 0 ? (
                 <>
-                  <img
-                    src={productImageUrl((product.imageUrls || [])[0])}
-                    alt={product.name}
-                    className="w-full max-w-md object-contain rounded-lg"
-                  />
+                  <div className="w-full max-w-md aspect-square bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center">
+                    <img
+                      src={productImageUrl((product.imageUrls || [])[selectedImageIndex])}
+                      alt={product.name}
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                  </div>
                   {(product.imageUrls || []).length > 1 && (
-                    <div className="flex gap-2 mt-3 flex-wrap justify-center">
+                    <div className="flex flex-row gap-2 mt-3 justify-center">
                       {(product.imageUrls || []).map((url, i) => (
-                        <img
+                        <button
                           key={i}
-                          src={productImageUrl(url)}
-                          alt=""
-                          className="w-14 h-14 rounded-lg object-cover border border-gray-200"
-                        />
+                          type="button"
+                          onClick={() => setSelectedImageIndex(i)}
+                          className={`w-14 h-14 rounded-lg overflow-hidden border-2 shrink-0 transition-all focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center bg-gray-200 ${
+                            selectedImageIndex === i
+                              ? 'border-green-600 ring-2 ring-green-200'
+                              : 'border-gray-200 hover:border-gray-300'
+                          }`}
+                        >
+                          <img
+                            src={productImageUrl(url)}
+                            alt=""
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
                       ))}
                     </div>
                   )}
                 </>
               ) : (
-                <div className="w-full max-w-md h-64 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">No image</div>
+                <div className="w-full max-w-md aspect-square bg-gray-200 rounded-lg flex items-center justify-center text-gray-400">No image</div>
               )}
             </div>
 
@@ -234,7 +252,7 @@ const Productdetail = () => {
             </div>
           </section>
 
-          <SuggestionProduct />
+          <SuggestionProduct excludeProductId={product._id} />
         </div>
       </main>
 

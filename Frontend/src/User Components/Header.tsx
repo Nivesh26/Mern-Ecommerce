@@ -1,6 +1,9 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import { FaUser, FaShoppingCart } from 'react-icons/fa'
 import { getUser } from '../api/auth'
+
+const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+  `font-medium transition-colors ${isActive ? 'text-red-600' : 'text-gray-700 hover:text-red-600'}`
 
 const Header = () => {
   const user = getUser()
@@ -13,12 +16,12 @@ const Header = () => {
             <span className="text-xl font-bold text-gray-800">Nivesh</span>
           </Link>
         </div>
-        <ul className="hidden md:flex space-x-8 text-gray-700 font-medium">
-          <li><Link to="/" className="hover:text-red-600">Home</Link></li>
-          <li><Link to="/new" className="hover:text-red-600">New</Link></li>
-          <li><Link to="/shop" className="hover:text-red-600">Shop</Link></li>
-          <li><Link to="/aboutus" className="hover:text-red-600">About Us</Link></li>
-          <li><Link to="/contact" className="hover:text-red-600">Contact</Link></li>
+        <ul className="hidden md:flex space-x-8">
+          <li><NavLink to="/" end className={navLinkClass}>Home</NavLink></li>
+          <li><NavLink to="/new" className={navLinkClass}>New</NavLink></li>
+          <li><NavLink to="/shop" className={navLinkClass}>Shop</NavLink></li>
+          <li><NavLink to="/aboutus" className={navLinkClass}>About Us</NavLink></li>
+          <li><NavLink to="/contact" className={navLinkClass}>Contact</NavLink></li>
         </ul>
 
         <div className="hidden md:flex items-center space-x-3">

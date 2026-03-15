@@ -153,9 +153,6 @@ const Product = () => {
             <h2 className="text-lg font-semibold text-gray-800">
               {editingId ? 'Edit product' : 'Add new product'}
             </h2>
-            <p className="text-sm text-gray-600 mt-0.5">
-              Upload up to {MAX_IMAGES} images from your laptop. Formats: JPEG, PNG, GIF, WebP.
-            </p>
           </div>
           <form onSubmit={handleSubmit} className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
