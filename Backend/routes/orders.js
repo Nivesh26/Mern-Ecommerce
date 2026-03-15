@@ -2,6 +2,7 @@ import express from 'express';
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
 import User from '../models/User.js';
+import Notification from '../models/Notification.js';
 import { protect } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -81,6 +82,33 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
+// GET /api/orders/my-orders – list current user's orders
+router.get('/my-orders', protect, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.userId })
+      .sort({ createdAt: -1 })
+      .lean();
+    const ordersForClient = orders.map((o) => ({
+      _id: o._id,
+      id: `ORD-${String(o._id).slice(-6).toUpperCase()}`,
+      customerName: o.customerName,
+      customerEmail: o.customerEmail,
+      date: o.createdAt ? new Date(o.createdAt).toISOString().slice(0, 10) : '',
+      status: o.status,
+      items: o.items.map((i) => ({
+        productName: i.productName,
+        quantity: i.quantity,
+        price: i.price,
+      })),
+      total: o.total,
+    }));
+    res.json({ success: true, orders: ordersForClient });
+  } catch (error) {
+    console.error('My orders error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to get orders.' });
+  }
+});
+
 // GET /api/orders – list all orders (admin only)
 router.get('/', protect, async (req, res) => {
   try {
@@ -130,6 +158,16 @@ router.put('/:id/status', protect, async (req, res) => {
     }
     order.status = status;
     await order.save();
+
+    const orderDisplayId = `ORD-${String(order._id).slice(-6).toUpperCase()}`;
+    const message = `Your order ${orderDisplayId} status is now ${status}.`;
+    await Notification.create({
+      user: order.user,
+      orderId: order._id,
+      orderDisplayId,
+      message,
+    });
+
     res.json({ success: true, order: order.toObject() });
   } catch (error) {
     console.error('Update order status error:', error);

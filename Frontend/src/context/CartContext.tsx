@@ -98,7 +98,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const token = getAuthToken()
-    if (!token || items.length === 0) return
+    if (!token) return
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
     saveTimeoutRef.current = setTimeout(() => {
       saveTimeoutRef.current = null

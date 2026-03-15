@@ -78,6 +78,7 @@ const Orders = () => {
     try {
       await updateOrderStatusAPI(order._id, status)
       setOrders((prev) => prev.map((o) => (o._id === order._id ? { ...o, status } : o)))
+      toast.success(`Status updated to ${status}. Customer has been notified.`)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to update status')
     }

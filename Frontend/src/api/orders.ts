@@ -55,6 +55,17 @@ export async function getOrders(): Promise<{ success: boolean; orders: OrderFrom
   return data
 }
 
+export async function getMyOrders(): Promise<{ success: boolean; orders: OrderFromAPI[] }> {
+  const token = getAuthToken()
+  if (!token) throw new Error('Not logged in.')
+  const res = await fetch(`${API_URL}/api/orders/my-orders`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(data?.message || 'Failed to load your orders.')
+  return data
+}
+
 export async function updateOrderStatus(orderId: string, status: OrderFromAPI['status']): Promise<{ success: boolean; order: OrderFromAPI }> {
   const token = getAuthToken()
   if (!token) throw new Error('Not logged in.')

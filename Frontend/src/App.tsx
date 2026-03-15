@@ -23,6 +23,7 @@ import Message from './Admin/Message'
 import Settings from './Admin/Settings'
 import Cart from './User Pages/Cart'
 import Checkout from './User Pages/checkout'
+import Purchaseitems from './User Pages/Purchaseitems'
 import Profile from './User Pages/Profile'
 
 const AppContent = () => {
@@ -42,6 +43,7 @@ const AppContent = () => {
           <Route element={<RequireAuth />}>
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/purchase-items" element={<Purchaseitems />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/login" element={<Userlogin />} />
