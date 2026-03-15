@@ -1,25 +1,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
-import productImage from '../assets/176775850311hn1.webp'
-import productImage2 from '../assets/SpecialChyawanprash.webp'
-
-type CartItem = {
-  id: string
-  name: string
-  price: number
-  image: string
-  quantity: number
-}
-
-const INITIAL_CART: CartItem[] = [
-  { id: '1', name: 'Dant Kanti Natural Toothpaste 43g (Buy 11+ 1 Free) Hanger', price: 450, image: productImage, quantity: 2 },
-  { id: '2', name: 'Special Chyawanprash', price: 650, image: productImage2, quantity: 1 }
-]
+import { useCart } from '../context/CartContext'
 
 const Cart = () => {
-  const [items, setItems] = useState<CartItem[]>(INITIAL_CART)
+  const { items, removeItem, updateQuantity } = useCart()
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const selectedItems = items.filter((i) => selectedIds.has(i.id))
   const subtotal = selectedItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
@@ -42,25 +29,28 @@ const Cart = () => {
   }
 
   const deleteSelected = () => {
-    setItems((prev) => prev.filter((i) => !selectedIds.has(i.id)))
+    const count = selectedIds.size
+    selectedIds.forEach((id) => removeItem(id))
     setSelectedIds(new Set())
+    toast.success(count === 1 ? 'Item removed from cart' : `${count} items removed from cart`)
   }
 
   const allSelected = items.length > 0 && selectedIds.size === items.length
   const someSelected = selectedIds.size > 0
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const handleUpdateQuantity = (id: string, quantity: number) => {
     const newQty = Math.max(1, quantity)
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, quantity: newQty } : i)))
+    updateQuantity(id, newQty)
   }
 
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id))
+  const handleRemoveItem = (id: string) => {
+    removeItem(id)
     setSelectedIds((prev) => {
       const next = new Set(prev)
       next.delete(id)
       return next
     })
+    toast.success('Removed from cart')
   }
 
   return (
@@ -147,7 +137,7 @@ const Cart = () => {
                             <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
                               <button
                                 type="button"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                                 disabled={item.quantity <= 1}
                                 className="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                               >
@@ -156,7 +146,7 @@ const Cart = () => {
                               <span className="w-10 h-9 flex items-center justify-center text-sm font-semibold text-gray-800 border-x border-gray-100 tabular-nums">{item.quantity}</span>
                               <button
                                 type="button"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                                 className="w-9 h-9 flex items-center justify-center text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
                               >
                                 +
@@ -165,7 +155,7 @@ const Cart = () => {
                             <span className="text-base font-semibold text-green-600 tabular-nums">Rs. {(item.price * item.quantity).toLocaleString()}</span>
                             <button
                               type="button"
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => handleRemoveItem(item.id)}
                               className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors ml-auto"
                               aria-label="Remove"
                               title="Remove item"

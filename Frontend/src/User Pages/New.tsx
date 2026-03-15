@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../User Components/Header.tsx'
 import Footer from '../User Components/Footer.tsx'
+import { toast } from 'react-toastify'
 import { getProducts, productImageUrl, type ProductItem } from '../api/products'
 import { useCart } from '../context/CartContext'
 
@@ -35,6 +36,7 @@ const New = () => {
       category: product.category,
       description: product.description,
     })
+    toast.success('Added to cart')
   }
 
   const filteredProducts = products.filter((product) => {

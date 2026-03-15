@@ -1,4 +1,7 @@
-import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react'
+import type { ReactNode } from 'react'
+import { getAuthToken } from '../api/auth'
+import { getCart, saveCart, mapCartToItems } from '../api/cart'
 
 export type CartProduct = {
   id?: number | string
@@ -29,12 +32,21 @@ function getCartItemId(product: CartProduct): string {
   return `product-${product.name.replace(/\s+/g, '-').slice(0, 40)}`
 }
 
+/** Convert context items to API payload */
+function itemsToPayload(items: CartItem[]): { productId: string; quantity: number }[] {
+  return items.map((i) => ({
+    productId: i.id.replace(/^product-/, ''),
+    quantity: i.quantity,
+  }))
+}
+
 type CartContextValue = {
   items: CartItem[]
   addItem: (product: CartProduct, quantity?: number) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
   itemCount: number
+  refreshCart: () => Promise<void>
 }
 
 const CartContext = createContext<CartContextValue | null>(null)
@@ -47,11 +59,52 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch (_) {}
     return []
   })
+  const isMounted = useRef(false)
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const refreshCart = useCallback(async () => {
+    const token = getAuthToken()
+    if (!token) return
+    try {
+      const { cart } = await getCart()
+      setItems(mapCartToItems(cart || []))
+    } catch (_) {
+      // keep current local cart on error
+    }
+  }, [])
+
+  useEffect(() => {
+    isMounted.current = true
+    const token = getAuthToken()
+    if (token) {
+      getCart()
+        .then((data) => {
+          if (isMounted.current) setItems(mapCartToItems(data.cart || []))
+        })
+        .catch(() => {})
+    }
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
 
   useEffect(() => {
     try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
     } catch (_) {}
+  }, [items])
+
+  useEffect(() => {
+    const token = getAuthToken()
+    if (!token || items.length === 0) return
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    saveTimeoutRef.current = setTimeout(() => {
+      saveTimeoutRef.current = null
+      saveCart(itemsToPayload(items)).catch(() => {})
+    }, 500)
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    }
   }, [items])
 
   const addItem = useCallback((product: CartProduct, quantity = 1) => {
@@ -92,7 +145,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addItem,
     removeItem,
     updateQuantity,
-    itemCount
+    itemCount,
+    refreshCart,
   }
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>

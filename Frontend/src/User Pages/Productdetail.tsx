@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
 import SuggestionProduct from '../User Components/SuggestionProduct'
+import { toast } from 'react-toastify'
 import { useCart } from '../context/CartContext'
 import { getProduct, productImageUrl, type ProductItem } from '../api/products'
 
@@ -67,6 +68,7 @@ const Productdetail = () => {
       category: product.category,
       description: product.description
     })
+    toast.success('Added to cart')
   }
 
   const handleReviewSubmit = (e: React.FormEvent) => {

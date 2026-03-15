@@ -9,7 +9,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     clearAuth()
-    toast.info('Logged out.')
+    toast.error('Logged out.')
     navigate('/')
   }
 

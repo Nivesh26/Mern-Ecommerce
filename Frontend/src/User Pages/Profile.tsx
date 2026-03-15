@@ -34,7 +34,7 @@ const Profile = () => {
 
   const handleLogout = () => {
     clearAuth()
-    toast.info('Logged out.')
+    toast.error('Logged out.')
     navigate('/')
   }
   const [showChangePassword, setShowChangePassword] = useState(false)

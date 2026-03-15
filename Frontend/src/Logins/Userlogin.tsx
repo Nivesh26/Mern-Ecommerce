@@ -4,9 +4,11 @@ import { toast } from 'react-toastify'
 import Header from '../User Components/Header'
 import Footer from '../User Components/Footer'
 import { login, setAuthToken, setUser } from '../api/auth'
+import { useCart } from '../context/CartContext'
 
 const Userlogin = () => {
   const navigate = useNavigate()
+  const { refreshCart } = useCart()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -31,6 +33,7 @@ const Userlogin = () => {
         setAuthToken(res.token)
         setUser(res.user)
         toast.success('Logged in successfully.')
+        await refreshCart()
         if (res.user.role === 'admin') {
           navigate('/adminhomepage')
         } else {
