@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 const Footer = () => {
   return (
@@ -20,29 +20,55 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/" className="text-gray-400 hover:text-red-400 transition-colors">
+                <NavLink
+                  to="/"
+                  end
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`
+                  }
+                >
                   Home
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/new" className="text-gray-400 hover:text-red-400 transition-colors">
+                <NavLink
+                  to="/new"
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`
+                  }
+                >
                   New
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/shop" className="text-gray-400 hover:text-red-400 transition-colors">
+                <NavLink
+                  to="/shop"
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`
+                  }
+                >
                   Shop
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/aboutus" className="text-gray-400 hover:text-red-400 transition-colors">
+                <NavLink
+                  to="/aboutus"
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`
+                  }
+                >
                   About Us
-                </Link>
+                </NavLink>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-400 hover:text-red-400 transition-colors">
+                <NavLink
+                  to="/contact"
+                  className={({ isActive }) =>
+                    `transition-colors ${isActive ? 'text-red-400' : 'text-gray-400 hover:text-red-400'}`
+                  }
+                >
                   Contact Us
-                </Link>
+                </NavLink>
               </li>
             </ul>
           </div>
