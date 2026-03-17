@@ -30,7 +30,7 @@ const CTA = () => {
               Shop Now
             </Link>
             <Link
-              to="/about"
+              to="/aboutus"
               className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-white hover:text-green-600 transition-all duration-300 transform hover:scale-105"
             >
               Learn More

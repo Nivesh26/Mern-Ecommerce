@@ -193,12 +193,12 @@ const Aboutus = () => {
               Visit our store in Patan Durbar Square or explore our products online. We're here to guide you on your wellness journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="#location"
+              <Link
+                to="/shop"
                 className="bg-white text-green-600 px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
                 Visit Our Store
-              </a>
+              </Link>
               <Link
                 to="/shop"
                 className="bg-green-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-green-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
