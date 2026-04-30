@@ -21,7 +21,7 @@ const Navbar = () => {
     }`
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white flex flex-col z-40">
+    <aside className="fixed left-0 top-0 h-full w-64 bg--800 text-white flex flex-col z-40">
       {/* Brand */}
       <div className="p-5 border-b border-gray-700">
         <Link to="/adminhomepage" className="text-xl font-bold text-white hover:text-green-400 transition-colors">
